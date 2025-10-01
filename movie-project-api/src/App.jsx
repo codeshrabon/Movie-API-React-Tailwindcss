@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import "./App.css";
 import Search from "./components/Search.jsx";
+import Spinner from "./components/Spinner.jsx";
 
 // use to get the movies
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -105,7 +106,7 @@ const App = () => {
           </header>
 
           <section className="all-movies">
-            <h2>All movies</h2>
+            <h2 className="mt-[20px]">All movies</h2>
 
             {/* to display the error message into sections */}
             {/* instead of showing thins message we can use some ternary operation and
@@ -113,7 +114,7 @@ const App = () => {
             {/* {errorMessage && <p className="text-red-500">{errorMessage}</p>} */}
 
             {isLoading ? (
-              <p className="text-white">Loading...</p>
+              <Spinner />
             ) : errorMessage ? (
               <p className="text-red-500">{errorMessage}</p>
             ) : (
