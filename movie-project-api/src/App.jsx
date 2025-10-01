@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
+import MovieCard from "./components/MovieCard.jsx";
 
 // use to get the movies
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -98,8 +99,8 @@ const App = () => {
           <header>
             <img src="hero.png" alt="Hero Banner" />
             <h1>
-              Find <span className="text-gradient">Movies</span> You'll Without
-              the Hassle
+              Find <span className="text-gradient">Movies</span> Without
+                <span className="text-gradient"> Hassle</span>
             </h1>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <h2 className="text-white p-3 m-2">{searchTerm}</h2>
@@ -123,7 +124,8 @@ const App = () => {
                 {movieList.map((movie) => (
                   /* the main part here to use key. cause if we use the key then we can 
                   keep track of the list  */
-                  <p key={movie.id} className="text-blue-100">{movie.title}</p>
+                  /* we are using movieCard component here  */
+                  <MovieCard key={movie.id} movie={movie} />
                 ))}
               </ul>
             )}
