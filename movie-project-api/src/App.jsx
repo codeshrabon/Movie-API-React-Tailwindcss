@@ -6,6 +6,8 @@ import "./App.css";
 import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
+import { updateSearchCount } from "./appwrite.js";
+
 
 // use to get the movies
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -92,6 +94,9 @@ const App = () => {
       } */
       // and now if movie is fached then we will show them
       setMovieList(data.results || []);
+
+      // here implement the appwrite functions which we have done all the database creation 
+        updateSearchCount();
       console.log("Result: ", data.results);
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
