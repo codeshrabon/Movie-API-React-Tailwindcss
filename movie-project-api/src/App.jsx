@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
+import { useDebounce } from "react-use";
 import "./App.css";
+import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
-import MovieCard from "./components/MovieCard.jsx";
 
 // use to get the movies
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -29,25 +30,38 @@ const App = () => {
   // see error message in the page
   const [errorMessage, setErrorMessage] = useState("");
 
-  // now we need movie list in our page 
+  // now we need movie list in our page
   const [movieList, setMovieList] = useState([]);
 
-  // also we need loading phase while movie is being load we need to show something as loading 
+  // also we need loading phase while movie is being load we need to show something as loading
   const [isLoading, setIsLoading] = useState(false);
 
-  // now time to fetch movies form the api
-  const fetchMovies = async (query = '') => {
+  // for debounce we use  useState
+  //const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
 
-    // here we are setting loading cause before movie or the data are being shown it will load 
+  // here use useDebounce hook and implement searchMovie component
+  // here insted using it inside of UseEffect hook use component searchTerm
+  // and dependency array searchTerm
+  // Debounce the searchTerm to prevent making too many API requests
+  // by waiting for the user to stop typing for 500ms
+  //useDebounce(() => setDebounceSearchTerm(searchTerm), 500 [searchTerm]);
+  const debounceSearchTerm = useDebounce(searchTerm,500)[searchTerm];
+  
+  
+  
+  
+  // now time to fetch movies form the api
+  const fetchMovies = async (query = "") => {
+    // here we are setting loading cause before movie or the data are being shown it will load
     setIsLoading(true);
-    // before fatching the data there is nothing to show as error message 
+    // before fatching the data there is nothing to show as error message
     setErrorMessage("");
 
     try {
       /* we use encodedURIComponent to query to search specific movie data */
       const endpoint = query
-      ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`      
-      : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
       // when the end point done we will take response from endpoint to API_OPTIONS
       // here fetch is javascript function to get post delete create all the http request
@@ -67,32 +81,36 @@ const App = () => {
       // use consol log to see what data we get
       console.log(data);
 
-      // in case if there is any problem 
-      if(data.Response === 'False'){
-        setErrorMessage(data.Error || 'Failed to fetch movies');
+      // in case if there is any problem
+      if (data.Response === "False") {
+        setErrorMessage(data.Error || "Failed to fetch movies");
 
-        // so if the movie are not fetch we need to show something like empty 
+        // so if the movie are not fetch we need to show something like empty
         setMovieList([]);
         return;
       }
-      // and now if movie is fached then we will show them 
+      // and now if movie is fached then we will show them
       setMovieList(data.results || []);
-
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
 
       // to display message in the page
       setErrorMessage("Error fetching movies. Please try again later.");
-    }
-    // in last we use finally method cause if all above are being used then we need to stop the loading 
-    finally{
+    } finally {
+      // in last we use finally method cause if all above are being used then we need to stop the loading
       setIsLoading(false);
     }
   };
 
+  // we are not using it and instead we use debounce inside fetchMovie method
+  // and use searchTerm inside debounce hook above
+
   useEffect(() => {
+    fetchMovies(debounceSearchTerm);
+  }, [debounceSearchTerm]);
+  /*   useEffect(() => {
     fetchMovies(searchTerm);
-  }, [searchTerm]);
+  }, [searchTerm]); */
 
   return (
     <>
@@ -102,8 +120,9 @@ const App = () => {
           <header>
             <img src="hero.png" alt="Hero Banner" />
             <h1>
-              Find <span className="text-gradient">Movies</span> and <span className="text-gradient">Enjoy</span> Without
-                <span className="text-gradient"> Hassle</span>
+              Find <span className="text-gradient">Movies</span> and{" "}
+              <span className="text-gradient">Enjoy</span> Without
+              <span className="text-gradient"> Hassle</span>
             </h1>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <h2 className="text-white p-3 m-2">{searchTerm}</h2>
