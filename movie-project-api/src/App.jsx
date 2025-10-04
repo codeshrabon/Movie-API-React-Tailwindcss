@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useDebounce } from "react-use";
+
 import "./App.css";
 import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
@@ -37,15 +38,15 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // for debounce we use  useState
-  //const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
+  const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
 
   // here use useDebounce hook and implement searchMovie component
   // here insted using it inside of UseEffect hook use component searchTerm
   // and dependency array searchTerm
   // Debounce the searchTerm to prevent making too many API requests
   // by waiting for the user to stop typing for 500ms
-  //useDebounce(() => setDebounceSearchTerm(searchTerm), 500 [searchTerm]);
-  const debounceSearchTerm = useDebounce(searchTerm,500)[searchTerm];
+  useDebounce(() => {setDebounceSearchTerm(searchTerm);}, 500, [searchTerm]);
+  //const [debounceSearchTerm] = useDebounceValue(searchTerm,500);
   
   
   
@@ -108,6 +109,8 @@ const App = () => {
   useEffect(() => {
     fetchMovies(debounceSearchTerm);
   }, [debounceSearchTerm]);
+  
+  
   /*   useEffect(() => {
     fetchMovies(searchTerm);
   }, [searchTerm]); */
