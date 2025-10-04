@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { useDebounce } from "react-use";
 //import { useDebounceValue } from "react-use";
 import "./App.css";
+import { updateSearchCount } from "./appwrite.js";
 import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
-import { updateSearchCount } from "./appwrite.js";
-
 
 // use to get the movies
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -51,7 +49,7 @@ const App = () => {
   // Debounce the searchTerm to prevent making too many API requests
   // by waiting for the user to stop typing for 500ms
   //useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
- //const [debounceSearchTerm] = useDebounceValue(searchTerm,500);
+  //const [debounceSearchTerm] = useDebounceValue(searchTerm,500);
 
   // now time to fetch movies form the api
   const fetchMovies = async (query = "") => {
@@ -95,8 +93,13 @@ const App = () => {
       // and now if movie is fached then we will show them
       setMovieList(data.results || []);
 
-      // here implement the appwrite functions which we have done all the database creation 
-        updateSearchCount();
+      // here implement the appwrite functions which we have done all the database creation
+      // updateSearchCount();
+
+      // we are about to update the searchterm
+      if (query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0]);
+      }
       console.log("Result: ", data.results);
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
@@ -109,8 +112,8 @@ const App = () => {
     }
   };
 
-  // Instead of relying on react-use, you can implement 
-  // debounce with useEffect + setTimeout. 
+  // Instead of relying on react-use, you can implement
+  // debounce with useEffect + setTimeout.
   // This is very clear and avoids version issues:
   useEffect(() => {
     const handler = setTimeout(() => {
