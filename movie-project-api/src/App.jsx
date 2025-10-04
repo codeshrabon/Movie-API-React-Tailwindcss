@@ -36,7 +36,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // now time to fetch movies form the api
-  const fetchMovies = async () => {
+  const fetchMovies = async (query = '') => {
 
     // here we are setting loading cause before movie or the data are being shown it will load 
     setIsLoading(true);
@@ -44,7 +44,10 @@ const App = () => {
     setErrorMessage("");
 
     try {
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      /* we use encodedURIComponent to query to search specific movie data */
+      const endpoint = query
+      ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`      
+      : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
       // when the end point done we will take response from endpoint to API_OPTIONS
       // here fetch is javascript function to get post delete create all the http request
@@ -88,8 +91,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    fetchMovies(searchTerm);
+  }, [searchTerm]);
 
   return (
     <>
@@ -99,7 +102,7 @@ const App = () => {
           <header>
             <img src="hero.png" alt="Hero Banner" />
             <h1>
-              Find <span className="text-gradient">Movies</span> Without
+              Find <span className="text-gradient">Movies</span> and <span className="text-gradient">Enjoy</span> Without
                 <span className="text-gradient"> Hassle</span>
             </h1>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
