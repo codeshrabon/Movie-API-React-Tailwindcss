@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useDebounce } from "react-use";
-
+//import { useDebounceValue } from "react-use";
 import "./App.css";
 import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
@@ -38,19 +38,19 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // for debounce we use  useState
-  const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
+  const [debounceSearchTerm, setDebounceSearchTerm] = useState(searchTerm);
+
+  // using this instead of debounce
+  //const [debouncedSearchTerm] = useDebounceValue(searchTerm, 500);
 
   // here use useDebounce hook and implement searchMovie component
   // here insted using it inside of UseEffect hook use component searchTerm
   // and dependency array searchTerm
   // Debounce the searchTerm to prevent making too many API requests
   // by waiting for the user to stop typing for 500ms
-  useDebounce(() => {setDebounceSearchTerm(searchTerm);}, 500, [searchTerm]);
-  //const [debounceSearchTerm] = useDebounceValue(searchTerm,500);
-  
-  
-  
-  
+  //useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+ //const [debounceSearchTerm] = useDebounceValue(searchTerm,500);
+
   // now time to fetch movies form the api
   const fetchMovies = async (query = "") => {
     // here we are setting loading cause before movie or the data are being shown it will load
@@ -83,15 +83,16 @@ const App = () => {
       console.log(data);
 
       // in case if there is any problem
-      if (data.Response === "False") {
+      /*  if (data.Response === "False") {
         setErrorMessage(data.Error || "Failed to fetch movies");
 
         // so if the movie are not fetch we need to show something like empty
         setMovieList([]);
         return;
-      }
+      } */
       // and now if movie is fached then we will show them
       setMovieList(data.results || []);
+      console.log("Result: ", data.results);
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
 
@@ -103,14 +104,25 @@ const App = () => {
     }
   };
 
+  // Instead of relying on react-use, you can implement 
+  // debounce with useEffect + setTimeout. 
+  // This is very clear and avoids version issues:
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebounceSearchTerm(searchTerm);
+    }, 500);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
   // we are not using it and instead we use debounce inside fetchMovie method
   // and use searchTerm inside debounce hook above
 
   useEffect(() => {
     fetchMovies(debounceSearchTerm);
   }, [debounceSearchTerm]);
-  
-  
+
   /*   useEffect(() => {
     fetchMovies(searchTerm);
   }, [searchTerm]); */
