@@ -194,6 +194,7 @@ const App = () => {
           )}
 
 
+          {/* still we can use  */}
           <section className="all-movies">
             <h2 >All movies</h2>
 
