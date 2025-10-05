@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 //import { useDebounceValue } from "react-use";
 import "./App.css";
-import { updateSearchCount } from "./appwrite.js";
+import { getTrendingMovies, updateSearchCount } from "./appwrite.js";
 import MovieCard from "./components/MovieCard.jsx";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
@@ -33,6 +33,9 @@ const App = () => {
 
   // now we need movie list in our page
   const [movieList, setMovieList] = useState([]);
+
+  // we create a state for trending movies
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
   // also we need loading phase while movie is being load we need to show something as loading
   const [isLoading, setIsLoading] = useState(false);
@@ -112,6 +115,23 @@ const App = () => {
     }
   };
 
+  //another function for trendig movies 
+  const loadTrendingMovies = async () => {
+    try{
+      // make sure it imported 
+      const movies = await getTrendingMovies();
+
+      setTrendingMovies(movies);
+    }
+    catch(error){
+      console.error(`Error fetching trending movies: ${error}`);
+      // but we cant use error message cause we already use it 
+      //setErrorMessage("Error fetching movies. Please try again later.");
+      // in fetch movie if we use this we may get error so 
+      // we have to be carefull about it 
+    }
+  }
+
   // Instead of relying on react-use, you can implement
   // debounce with useEffect + setTimeout.
   // This is very clear and avoids version issues:
@@ -134,6 +154,10 @@ const App = () => {
   /*   useEffect(() => {
     fetchMovies(searchTerm);
   }, [searchTerm]); */
+  // useeffect to fetch the trendingMovies 
+  useEffect(() => {
+    loadTrendingMovies();
+  }, []);
 
   return (
     <>
@@ -151,8 +175,27 @@ const App = () => {
            
           </header>
 
+          {/* here we impelement trending movies sections
+          first we check trending movie is grettern 
+          */}
+
+          {trendingMovies.length > 0 && (
+            <section className = "trending">
+              <h2>Trending Movies</h2>
+              <ul>
+                {trendingMovies.map((movie, index) =>(
+                <li key={movie.$id}>
+                  <p>{index + 1}</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+
           <section className="all-movies">
-            <h2 className="mt-[20px]">All movies</h2>
+            <h2 >All movies</h2>
 
             {/* to display the error message into sections */}
             {/* instead of showing thins message we can use some ternary operation and

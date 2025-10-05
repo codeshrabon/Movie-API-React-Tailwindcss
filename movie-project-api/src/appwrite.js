@@ -74,6 +74,8 @@ export const updateSearchCount = async (searchTerm, movie) => {
       }); */
         }
         // 3. if it dosen't, create a new document with the search term and count as 1
+        //poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+        //There is no property called poster_url in TMDB data — only poster_path.
         else{
             await table.createRow({
               databaseId: DATABASE_ID, 
@@ -83,7 +85,7 @@ export const updateSearchCount = async (searchTerm, movie) => {
                 searchTerm,
                 count: 1,
                 movie_id: movie.id,
-                poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_url}`,
+                poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
             },
           });
 
@@ -112,4 +114,23 @@ export const updateSearchCount = async (searchTerm, movie) => {
     // console.log("DATABASE_ID:", DATABASE_ID);
     // console.log("COLLECTION_ID:", COLLECTION_ID);
 
+}
+
+// here we build to get trending movies 
+export const getTrendingMovies = async () =>{
+  try{
+    const result = await table.listRows({
+      databaseId:DATABASE_ID,
+      tableId:COLLECTION_ID,
+      queries:[Query.limit(5),
+        Query.orderDesc("count"),
+      ],
+    });
+    //console.log(`Trending: ${result}`);
+    return result.rows;
+  }
+  catch(error){
+    console.error(error);
+    return [];
+  }
 }
